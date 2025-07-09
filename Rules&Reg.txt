@@ -1,0 +1,8 @@
+PLEASE READ ALL THE RULES AND REGULATIONS GIVEN BELOW:
+1. No AI chatbots/websites can be used.
+2. Regular Git Commits must be done every 30 mins to the repo.
+3. Volunteers will randomly check the tabs and windows open on your computer to check malpractice. We recommend you only keep necessary tabs and windows open for the same.
+4. The Core Team will regularly monitor the accessed websites of all computers through the school's pvt network. Please avoid using any websites that may get you disqualified, as we will get to know.
+5.For participants using VSC, you must enable only extensions which you need for deployments or use of your software like LiveServer etc. No unnecessary extensions will be entertained.
+
+If any doubts, please feel free to ask the volunteers or core members.
