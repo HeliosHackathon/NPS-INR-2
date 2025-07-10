@@ -31,16 +31,17 @@ def index():
 @app.route("/farmer", methods=['GET', 'POST'])
 def farmer_sign_up_page():
     if request.method == 'GET':
-        return render_template('')  # TODO
-    password_hash = generate_password_hash(request.form.pop('password'))
-    db.session.add(Farmer(passwordHash=password_hash, **request.form))
+        return render_template('farmersignup.html')  # TODO
+    x = request.form.to_dict()
+    password_hash = generate_password_hash(x.pop('password'))
+    db.session.add(Farmer(passwordHash=password_hash, **x))
     db.session.commit()
     return redirect("/want-to-give-away")
 
 @app.route("/want-to-give-away", methods=['GET', 'POST'])
 def give_away_form():
     if request.method == 'GET':
-        return render_template('')  # TODO
+        return render_template('farmerform.html')  # TODO
     # farmer = db.session.get(Farmer, session.get('email'))
     db.session.add(GiveAway(farmer=session.get('email'), id=time.time(), **request.form))
     db.session.commit()
@@ -48,6 +49,18 @@ def give_away_form():
 
 @app.route("/login-farmer", methods=['GET', 'POST'])
 def login_farmer():
+    if request.method == 'GET':
+        return render_template('')  # TODO
+    farmer = db.session.get(Farmer, request.form['email'])
+    if check_password_hash(farmer.passwordHash, request.form['password']):
+        session['email'] = request.form['email']
+        session['type'] = 'FARMER'
+        return redirect("/")
+    else:
+        return jsonify(error="Wrong"), 400
+    
+@app.route("/login-recipient", methods=['GET', 'POST'])
+def login_recipient():
     if request.method == 'GET':
         return render_template('')  # TODO
     farmer = db.session.get(Farmer, request.form['email'])
