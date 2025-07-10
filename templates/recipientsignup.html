@@ -1,32 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">  
-<div class="container">  
-  <form id="contact" action="" method="post">
-    <fieldset>
-    <h1>SIGN FORM</h1>
-    <h2>You are a recipient!</h2>
-      <h3>Enter your name:</h3>
-      <input name="name" placeholder="Your name" type="text" tabindex="1" required autofocus>
-    </fieldset>
-    <fieldset>
-      <h3>Enter your email id:</h3>
-      <input name="email" placeholder="Your Email Address" type="email" tabindex="2" required>
-    </fieldset>
-    <fieldset>
-      <h3>Enter your phone number:</h3>
-      <input name="phoneNo" placeholder="Your Phone Number" type="tel" tabindex="3" required>
-    </fieldset>
-    <fieldset>
-      <h3>Enter your full address:</h3>
-      <input name="location" placeholder="Your address" type="text" tabindex="4" required>
-    </fieldset>
-    <fieldset>
-      <h3>Password:</h3>
-      <input name="password" placeholder="" type="password" tabindex="4" required>
-    </fieldset>
-    <fieldset>
-    <fieldset>
-      <button type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
-    </fieldset>
-  </form>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipient Signup - AgriConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AgriConnect</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if session.email %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('farmer_sign_up_page') }}">Farmer Signup</a></li>
+                    <li><a href="{{ url_for('recipient_sign_up_page') }}">Recipient Signup</a></li>
+                {% endif %}
+                 <li><a href="{{ url_for('giveaway_list') }}">All Giveaways</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
+        <form id="recipientSignupForm" action="{{ url_for('recipient_sign_up_page') }}" method="post">
+            <fieldset>
+                <legend>Recipient Registration</legend>
+                <p>Create your recipient account to find produce giveaways.</p>
+                
+                <div>
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Your full name" required autofocus>
+                </div>
+                
+                <div>
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" placeholder="Your email address" required>
+                </div>
+                
+                <div>
+                    <label for="phoneNo">Phone Number:</label>
+                    <input type="tel" id="phoneNo" name="phoneNo" placeholder="Your phone number" required>
+                </div>
+                
+                <div>
+                    <label for="location">Full Address (City, State):</label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Springfield, IL" required>
+                </div>
+                
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Choose a secure password" required>
+                </div>
+                
+                <div>
+                    <button type="submit" id="submit-button">Register as Recipient</button>
+                </div>
+            </fieldset>
+        </form>
+        <p style="text-align: center; margin-top: 1em;">Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+    </footer> -->
+</body>
+</html>

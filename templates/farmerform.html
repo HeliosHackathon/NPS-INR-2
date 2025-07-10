@@ -1,24 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">  
-<div class="container">  
-  <form id="contact" action="" method="post">
-    <center>
-      <h1 style="font-size:100px;">Farmers List</h1>
-    </center>
-    <h2>Please fill in the details so we can find a recepient!</h2>
-    
-      <h3>Enter your crop/produce type:</h3>
-      <textarea name="produceType" placeholder="Produce type" tabindex="1" required></textarea>
-    </fieldset>
-    </fieldset>
-    <fieldset>
-      <h3>How much of this crop do you have?</h3>
-      <textarea name="quantity" placeholder="Produce Quantity" tabindex="2" required></textarea>
-    </fieldset>
-    <fieldset>
-      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
-    </fieldset>
-  </form>
- 
-  
-</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Giveaway - AgriConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AgriConnect</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if session.email %}
+                    {% if session.type == 'FARMER' %}
+                        <li><a href="{{ url_for('give_away_form') }}">Create Giveaway</a></li>
+                        <li><a href="{{ url_for('my_giveaway_list') }}">My Giveaways</a></li>
+                    {% elif session.type == 'RECP' %}
+                        <li><a href="{{ url_for('giveaway_list') }}">Available Giveaways</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('farmer_sign_up_page') }}">Farmer Signup</a></li>
+                    <li><a href="{{ url_for('recipient_sign_up_page') }}">Recipient Signup</a></li>
+                {% endif %}
+                 <li><a href="{{ url_for('giveaway_list') }}">All Giveaways (Public)</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="farmerGiveawayForm" action="{{ url_for('give_away_form') }}" method="post">
+            <fieldset>
+                <legend>Create New Giveaway</legend>
+                <p>Please fill in the details of the produce you want to give away.</p>
+                
+                <div>
+                    <label for="produceType">Produce Type:</label>
+                    <input type="text" id="produceType" name="produceType" placeholder="e.g., Apples, Carrots, Wheat" required>
+                </div>
+                
+                <div>
+                    <label for="quantity">Quantity:</label>
+                    <input type="text" id="quantity" name="quantity" placeholder="e.g., 10 kgs, 2 boxes, 1 ton" required>
+                </div>
+                
+                <div>
+                    <button type="submit" id="submit-button">Submit Giveaway</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+    </footer> -->
+</body>
+</html>

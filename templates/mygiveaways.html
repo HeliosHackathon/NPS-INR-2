@@ -1,15 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">  
-    <ul>
-        {% for el in glist %}
-            <li>
-                {{ glist2.name }} <br/>
-                {{ glist2.email }} <br/>
-                {{ glist2.phoneNo }} <br/>
-                {{ glist2.location }} <br/>
-                {{ el.produceType }} <br/>
-                {{ el.quantity }} <br/>
-            </li>
-        {% endfor %}
-    </ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Giveaways - AgriConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AgriConnect</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if session.email %}
+                    {% if session.type == 'FARMER' %}
+                        <li><a href="{{ url_for('give_away_form') }}">Create Giveaway</a></li>
+                        <li><a href="{{ url_for('my_giveaway_list') }}">My Giveaways</a></li>
+                    {% elif session.type == 'RECP' %}
+                        <li><a href="{{ url_for('giveaway_list') }}">Available Giveaways</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('farmer_sign_up_page') }}">Farmer Signup</a></li>
+                    <li><a href="{{ url_for('recipient_sign_up_page') }}">Recipient Signup</a></li>
+                {% endif %}
+                 <li><a href="{{ url_for('giveaway_list') }}">All Giveaways (Public)</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h2>My Listed Giveaways</h2>
+        {% if farmer_details %}
+            <div class="farmer-info" style="padding: 10px; margin-bottom: 15px; background-color: #e9ecef; border-radius: 5px;">
+                <p><strong>Logged in as:</strong> {{ farmer_details.name }} ({{ farmer_details.email }})</p>
+            </div>
+        {% endif %}
+
+        {% if giveaways and giveaways|length > 0 %}
+            <div class="giveaway-list">
+                {% for item in giveaways %}
+                    <div class="giveaway-item">
+                        <h3>{{ item.produceType }}</h3>
+                        <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                        <p><small>Giveaway ID: {{ item.id }}</small></p>
+                        <p>Posted at <strong>{{ ctimes(item.id) }}</strong></p>
+                        {# Future: Add edit/delete buttons here
+                         <a href="{{ url_for('edit_giveaway', giveaway_id=item.id) }}" class="button-small">Edit</a>
+                         <a href="{{ url_for('delete_giveaway', giveaway_id=item.id) }}" class="button-small button-danger">Delete</a> #}
+                         <form action="{{ url_for('my_giveaway_list') }}" method="post">
+                            <fieldset>
+                                <input type="hidden" name="id" value="{{ item.id }}">
+                            </fieldset>
+                            <button type="submit" id="submit-button">Withdraw/repost Giveaway</button>
+                         </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You have not listed any giveaways yet. <a href="{{ url_for('give_away_form') }}">Create one now!</a></p>
+        {% endif %}
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+    </footer> -->
+</body>
 </html>

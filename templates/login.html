@@ -1,19 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">  
-<div class="container">  
-  <form id="contact" action="" method="post">
-    <fieldset>
-    <h1>LOGIN FORM</h1>
-      <h3>Enter your email:</h3>
-      <input name="email" placeholder="Your email" type="text" tabindex="1" required autofocus>
-    </fieldset>
-    <fieldset>
-      <h3>Password:</h3>
-      <input name="password" placeholder="" type="password" tabindex="4" required>
-    </fieldset>
-    <fieldset>
-    <fieldset>
-      <button type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
-    </fieldset>
-  </form>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AgriConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AgriConnect</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if session.email %}
+                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('farmer_sign_up_page') }}">Farmer Signup</a></li>
+                    <li><a href="{{ url_for('recipient_sign_up_page') }}">Recipient Signup</a></li>
+                {% endif %}
+                 <li><a href="{{ url_for('giveaway_list') }}">All Giveaways</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
+        <form id="loginForm" action="{{ url_for('login') }}" method="post">
+            <fieldset>
+                <legend>Login to Your Account</legend>
+                <p>Enter your credentials to access your account.</p>
+                
+                <div>
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" placeholder="Your email address" required autofocus>
+                </div>
+                
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Your password" required>
+                </div>
+
+                <div>
+                    <label for="user_type">Login as:</label>
+                    <select name="user_type" id="user_type" required>
+                        <option value="" disabled selected>Select account type...</option>
+                        <option value="farmer">Farmer</option>
+                        <option value="recipient">Recipient</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <button type="submit" id="submit-button">Login</button>
+                </div>
+            </fieldset>
+        </form>
+        <p style="text-align: center; margin-top: 20px;">
+            Don't have an account? 
+            <a href="{{ url_for('farmer_sign_up_page') }}">Sign up as a Farmer</a> or 
+            <a href="{{ url_for('recipient_sign_up_page') }}">Sign up as a Recipient</a>.
+        </p>
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+    </footer> -->
+</body>
+</html>

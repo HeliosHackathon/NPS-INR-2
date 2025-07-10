@@ -1,15 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">  
-    <ul>
-        {% for el, name, loc, phno in glist %}
-            <li>
-                {{ name }} <br/>
-                {{ el.farmer }} <br/>
-                {{ phno }} <br/>
-                {{ loc }} <br/>
-                {{ el.produceType }} <br/>
-                {{ el.quantity }} <br/>
-            </li>
-        {% endfor %}
-    </ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Giveaways - AgriConnect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AgriConnect</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if session.email %}
+                    {% if session.type == 'FARMER' %}
+                        <li><a href="{{ url_for('give_away_form') }}">Create Giveaway</a></li>
+                        <li><a href="{{ url_for('my_giveaway_list') }}">My Giveaways</a></li>
+                    {% elif session.type == 'RECP' %}
+                        <li><a href="{{ url_for('giveaway_list') }}">Available Giveaways</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('farmer_sign_up_page') }}">Farmer Signup</a></li>
+                    <li><a href="{{ url_for('recipient_sign_up_page') }}">Recipient Signup</a></li>
+                {% endif %}
+                 <li><a href="{{ url_for('giveaway_list') }}">All Giveaways (Public)</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h2>Available Produce Giveaways</h2>
+        {% if glist and glist|length > 0 %}
+            <div class="giveaway-list">
+                {% for giveaway, farmer_name, farmer_location, farmer_phone in glist %}
+                    <div class="giveaway-item">
+                        <h3>{{ giveaway.produceType }}</h3>
+                        <p><strong>Quantity:</strong> {{ giveaway.quantity }}</p>
+                        <p><strong>Farmer:</strong> {{ farmer_name }}</p>
+                        <p><strong>Location:</strong> {{ farmer_location }}</p>
+                        <p><strong>Contact:</strong> {{ farmer_phone }}</p>
+                        <p>Posted at <strong>{{ ctimes(giveaway.id) }}</strong></p>
+                        <p><small><em>Farmer Email (for reference): {{ giveaway.farmer }}</em></small></p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>There are currently no giveaways available. Please check back later!</p>
+        {% endif %}
+    </main>
+    <!-- <footer>
+        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+    </footer> -->
+</body>
 </html>
