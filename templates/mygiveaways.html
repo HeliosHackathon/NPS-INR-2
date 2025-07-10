@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">  
     <ul>
-        {% for el, name, loc, phno in glist %}
+        {% for el in glist %}
             <li>
-                {{ name }} <br/>
-                {{ el.farmer }} <br/>
-                {{ phno }} <br/>
-                {{ loc }} <br/>
+                {{ glist2.name }} <br/>
+                {{ glist2.email }} <br/>
+                {{ glist2.phoneNo }} <br/>
+                {{ glist2.location }} <br/>
                 {{ el.produceType }} <br/>
                 {{ el.quantity }} <br/>
             </li>
