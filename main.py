@@ -2,11 +2,13 @@ from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String, ForeignKey, PickleType
+from sqlalchemy import Integer, String, ForeignKey, PickleType, Double
 from sqlalchemy.ext.mutable import MutableList, MutableSet
 import time
+import secrets
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy()
 db.init_app(app)
@@ -19,7 +21,7 @@ class Farmer(db.Model):
     email: Mapped[str] = mapped_column(String, nullable=False, primary_key=True)
 
 class GiveAway(db.Model):
-    id: Mapped[int] = mapped_column(Integer, nullable=False, primary_key=True)
+    id: Mapped[str] = mapped_column(String, nullable=False, primary_key=True)
     farmer: Mapped[str] = mapped_column(String, nullable=False, primary_key=True)
     produceType: Mapped[str] = mapped_column(String, nullable=False)
     quantity: Mapped[str] = mapped_column(String, nullable=False)
@@ -33,9 +35,13 @@ def farmer_sign_up_page():
     if request.method == 'GET':
         return render_template('farmersignup.html')  # TODO
     x = request.form.to_dict()
+    # x.pop("submit")
     password_hash = generate_password_hash(x.pop('password'))
+    x['phoneNo'] = int(x['phoneNo'])
     db.session.add(Farmer(passwordHash=password_hash, **x))
     db.session.commit()
+    session['email'] = request.form['email']
+    session['type'] = 'FARMER'
     return redirect("/want-to-give-away")
 
 @app.route("/want-to-give-away", methods=['GET', 'POST'])
@@ -43,9 +49,13 @@ def give_away_form():
     if request.method == 'GET':
         return render_template('farmerform.html')  # TODO
     # farmer = db.session.get(Farmer, session.get('email'))
-    db.session.add(GiveAway(farmer=session.get('email'), id=time.time(), **request.form))
+    x = request.form.to_dict()
+    x.pop('submit')
+    x['farmer'] = session.get('email')
+    print(x)
+    db.session.add(GiveAway(id=str(time.time()), **x))
     db.session.commit()
-    return redirect("/give-aways")
+    return redirect("/my-giveaways")
 
 @app.route("/login-farmer", methods=['GET', 'POST'])
 def login_farmer():
@@ -70,3 +80,18 @@ def login_recipient():
         return redirect("/")
     else:
         return jsonify(error="Wrong"), 400
+    
+@app.route("/giveaways")
+def giveaway_list():
+    glist = db.session.execute(db.select(GiveAway, Farmer.name, Farmer.location).where(GiveAway.farmer == Farmer.email)).all()
+
+    return render_template("giveaways.html", glist=glist)
+
+@app.route("/my-giveaways")
+def my_giveaway_list():
+    email = session.get('email')
+    glist = db.session.execute(db.select(GiveAway, Farmer.name, Farmer.location).where(GiveAway.farmer == Farmer.email)).all()
+    return render_template("giveaways.html", glist=glist)
+    
+with app.app_context():
+    db.create_all()

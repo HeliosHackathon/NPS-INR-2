@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">  
+    <ul>
+        {% for el, name, loc in glist %}
+            <li>
+                {{ name }} <br/>
+                {{ el.farmer }} <br/>
+                {{ loc }} <br/>
+                {{ el.produceType }} <br/>
+                {{ el.quantity }} <br/>
+            </li>
+        {% endfor %}
+    </ul>
+</html>
