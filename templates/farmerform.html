@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Giveaway - AgriConnect</title>
+    <title>Create Giveaway - CropSwap</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
-        <h1>AgriConnect</h1>
+        <img src="{{ url_for('static', filename='logo.png') }}" height="100">
+        <h1>CropSwap</h1>
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
@@ -79,7 +80,7 @@
         </form>
     </main>
     <!-- <footer>
-        <p>&copy; 2024 AgriConnect. All rights reserved.</p>
+        <p>&copy; 2024 CropSwap. All rights reserved.</p>
     </footer> -->
 </body>
 </html>
