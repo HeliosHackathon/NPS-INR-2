@@ -30,6 +30,35 @@
         </nav>
     </header>
     <main class="container">
+        <h2>Search:</h2>
+            <div class="display">
+                <form action="/giveaways" method="post">
+                    <label for="produceType">Produce Type</label>
+                    <select name="produceType" id="produceType" required>
+                        <option value="" disabled selected>Select produce type...</option>
+                        {% for prodtype in all_produce_types %}
+                        <option value="{{ prodtype }}">{{ prodtype }}</option>
+                        {% endfor %}
+                    </select>
+                    <div>
+                        <button type="submit" id="submit-button">Search</button>
+                    </div>
+                </form>
+            </div>
+            <div class="display">
+                <form action="/giveaways" method="post">
+                    <label for="location">Location</label>
+                    <select name="location" id="location" required>
+                        <option value="" disabled selected>Select location...</option>
+                        {% for prodtype in all_locations %}
+                        <option value="{{ prodtype }}">{{ prodtype }}</option>
+                        {% endfor %}
+                    </select>
+                    <div>
+                        <button type="submit" id="submit-button">Search</button>
+                    </div>
+                </form>
+            </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flashes">
@@ -51,6 +80,8 @@
                         <p><strong>Location:</strong> {{ farmer_location }}</p>
                         <p><strong>Contact:</strong> {{ farmer_phone }}</p>
                         <p>Posted at <strong>{{ ctimes(giveaway.id) }}</strong></p>
+                        <p><strong>Expiry:</strong> {{ giveaway.expiryTime }}</p>
+                        <p><strong>Reason:</strong> {{ giveaway.reason }}</p>
                         <p><small><em>Farmer Email (for reference): {{ giveaway.farmer }}</em></small></p>
                     </div>
                 {% endfor %}

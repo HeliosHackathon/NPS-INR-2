@@ -54,6 +54,23 @@
                     <label for="quantity">Quantity:</label>
                     <input type="text" id="quantity" name="quantity" placeholder="e.g., 10 kgs, 2 boxes, 1 ton" required>
                 </div>
+
+                <div>
+                    <label for="expiryTime">Expiry Date (the absolutely last possible day it can be used):</label>
+                    <input type="date" id="expiryTime" name="expiryTime" required>
+                </div>
+
+                <div>
+                    <label for="reason">Reason you can't sell this elsewhere?</label>
+                    <select name="reason" id="reason" required>
+                        <option value="" disabled selected>Select reason...</option>
+                        <option value="exclusive contract">Have exclusive contract with someone, hence surplus can't be sold</option>
+                        <option value="overpricing">Not profitable to sell</option>
+                        <option value="market standards">Not meeting market aesthetic standards</option>
+                        <option value="storage/transportation">Would expire by the time we could transport it/Don't have storage infra</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
                 
                 <div>
                     <button type="submit" id="submit-button">Submit Giveaway</button>

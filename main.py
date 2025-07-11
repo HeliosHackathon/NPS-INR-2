@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String, Boolean
+from sqlalchemy import Integer, String, Boolean, Date
 import time
+import datetime
 import toml
 # import secrets # Not used directly, secret_key is from toml
 
@@ -25,6 +26,8 @@ class GiveAway(db.Model):
     produceType: Mapped[str] = mapped_column(String, nullable=False)
     quantity: Mapped[str] = mapped_column(String, nullable=False)
     status: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    expiryTime: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    reason: Mapped[str] = mapped_column(String, default="")
 
 class Recipient(db.Model):
     name: Mapped[str] = mapped_column(String, nullable=False)
@@ -134,8 +137,11 @@ def give_away_form():
     if request.method == 'POST':
         form_data = request.form.to_dict()
         form_data['farmer'] = session['email']
+        print(form_data['expiryTime'], type(form_data['expiryTime']), form_data)
+        form_data['expiryTime'] = datetime.date.fromisoformat(form_data['expiryTime'])
         # Consider removing 'submit' if it's part of form_data and not a DB column
         # form_data.pop('submit', None) # Safely remove if present
+        print(form_data)
         
         new_giveaway = GiveAway(id=str(time.time()), **form_data)
         db.session.add(new_giveaway)
@@ -144,17 +150,36 @@ def give_away_form():
         return redirect(url_for("my_giveaway_list"))
     return render_template('farmerform.html')
 
-@app.route("/giveaways")
+@app.route("/giveaways", methods=['GET', 'POST'])
 def giveaway_list():
     giveaways_data = db.session.execute(
-        db.select(GiveAway, Farmer.name, Farmer.location, Farmer.phoneNo).\
-        where(GiveAway.farmer == Farmer.email).where(GiveAway.status)
-    ).fetchall()
+            db.select(GiveAway, Farmer.name, Farmer.location, Farmer.phoneNo).\
+            where(GiveAway.farmer == Farmer.email).where(GiveAway.status)
+            .where(GiveAway.expiryTime > datetime.date.today())
+        ).fetchall()
+    all_produce_types = list(set(map(lambda x: x[0].produceType, giveaways_data)))
+    all_locations = list(set(map(lambda x: x[2], giveaways_data)))
+    if request.method == 'POST':
+        if request.form.get('produceType'):
+            giveaways_data = db.session.execute(
+                db.select(GiveAway, Farmer.name, Farmer.location, Farmer.phoneNo).where(GiveAway.status == True)\
+                .where(GiveAway.farmer == Farmer.email) \
+                .where(GiveAway.expiryTime > datetime.date.today())
+                .where(GiveAway.produceType == request.form['produceType'])
+            ).fetchall()
+        elif request.form.get('location'):
+            giveaways_data = db.session.execute(
+                db.select(GiveAway, Farmer.name, Farmer.location, Farmer.phoneNo).where(GiveAway.status == True)\
+                .where(GiveAway.farmer == Farmer.email) \
+                .where(GiveAway.expiryTime > datetime.date.today())
+                .where(Farmer.location == request.form['location'])
+            ).fetchall()
+        else:
+            return "", 404
     
     # The template expects glist=(giveaway_obj, farmer_name, farmer_loc, farmer_phno)
-    return render_template("giveaways.html", glist=giveaways_data, \
+    return render_template("giveaways.html", glist=giveaways_data, all_produce_types=all_produce_types, all_locations=all_locations,\
                            ctimes=lambda x: time.ctime(float(x)))
-
 
 @app.route("/my-giveaways", methods=['GET', 'POST'])
 def my_giveaway_list():
